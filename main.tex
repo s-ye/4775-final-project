@@ -1,0 +1,276 @@
+\documentclass[10pt]{wlscirep}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[parfill]{parskip}
+\usepackage{lipsum}  
+\usepackage[numbers,sort&compress]{natbib} % for citations
+\usepackage{amsmath, amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{hyperref}
+\usepackage[scaled=0.83]{beramono}
+\setlist[itemize]{noitemsep, topsep=0pt}
+\setlist[description]{noitemsep, topsep=0pt, font=\normalfont\itshape$\circ$\space}
+
+
+%====================================
+% Additional settings goes here
+%====================================
+
+
+
+%=====================================
+% Start here
+%=====================================
+\title{RNA Secondary Structure Prediction: A Comparative Analysis of Nussinov and Zuker Algorithms}
+
+% delete unused author space-holders.
+\author[3]{Carla Flores}
+\author[2]{Vinny Huang}
+\author[5]{Andrew Kim}
+\author[4]{Jeffrey Morse}
+\author[1]{Song Ye}
+\affil[3]{cmf262@cornell.edu}
+\affil[2]{vh222@cornell.edu}
+\affil[5]{amk379@cornell.edu}
+\affil[4]{jbm249@cornell.edu}
+\affil[1]{sy459@cornell.edu}
+
+
+\begin{abstract}
+    RNA secondary structure plays a pivotal role in determining the biological function of RNA molecules, influencing processes such as gene regulation, catalysis, and structural organization. Accurate computational prediction of RNA secondary structures is essential for understanding RNA function and designing RNA-based therapeutics. In this study, we compare the performance of two widely used RNA secondary structure prediction algorithms: the Nussinov algorithm, which maximizes the number of base pairs, and the Zuker algorithm, which predicts the minimum free energy (MFE) structure based on thermodynamic principles.
+
+    To address the limitations of deterministic methods, we incorporate stochastic traceback using the ViennaRNA package to sample secondary structures from the Boltzmann-weighted ensemble, enabling the analysis of structural variability. We introduce the concept of ensemble diversity, which quantifies structural flexibility based on the mean base-pair distance across sampled structures. Using a dataset of synthetic and biologically relevant RNA sequences, we evaluate the algorithms using metrics such as overlap score, MFE, and traceback diversity.
+    
+    Our results demonstrate that while the Zuker algorithm provides biologically realistic predictions with lower free energy, stochastic traceback captures the inherent variability in RNA folding, highlighting the limitations of relying solely on deterministic methods. These findings underscore the importance of integrating stochastic approaches for capturing RNA structural flexibility, providing insights into RNA folding dynamics and potential metastable states.
+\end{abstract}
+
+
+\begin{document}
+\flushbottom
+\maketitle
+
+\thispagestyle{empty}
+
+\noindent \textbf{Keywords (minumum 5):} RNA secondary structure prediction, Nussinov algorithm, Zuker algorithm, minimum free energy, computational biology
+
+\noindent \textbf{Project type:}  Both reimplementation and benchmarking
+are included in the project.
+
+
+\noindent \textbf{Project repository:} \url{
+    https://github.com/s-ye/4775-final-project.git
+}   
+
+\vspace{2em}
+
+
+
+\newpage
+\setcounter{page}{1}
+
+%====================================
+% Introduction 
+%====================================
+\section{Introduction}
+RNA molecules are essential regulators of numerous cellular processes, performing structural, enzymatic, and regulatory roles. The biological functionality of RNA is often determined by its secondary structure, which arises from the folding of its nucleotide sequence into base-paired configurations. Computational prediction of RNA secondary structure is critical for understanding RNA function, advancing RNA-based therapeutics, and designing RNA molecules for synthetic biology applications \cite{turner1999thermodynamic, hofacker2003viennarna}.
+
+Two widely used approaches for RNA secondary structure prediction are the Nussinov algorithm and the Zuker algorithm. The Nussinov algorithm focuses on maximizing the number of base pairs \cite{nussinov1978loop}, whereas the Zuker algorithm incorporates thermodynamic principles to predict the minimum free energy (MFE) structure \cite{zuker1981optimal}. However, these deterministic methods often fail to capture the dynamic nature of RNA folding, particularly in cases where RNA adopts multiple metastable conformations or pseudoknots.
+
+To address this limitation, we extended our analysis by performing stochastic traceback using the ViennaRNA package. This approach generates multiple secondary structures sampled from the Boltzmann-weighted ensemble, providing insights into the structural variability of RNA. Additionally, we introduced the concept of ensemble diversity, which quantifies the variability in the Boltzmann ensemble as the mean base-pair distance across sampled structures. By comparing ensemble diversity, stochastic traceback results, and MFE structures, we sought to better understand the interplay between RNA sequence properties, structural variability, and thermodynamic stability.
+
+This study provides a comprehensive evaluation of RNA secondary structure prediction by comparing deterministic algorithms (Nussinov and Zuker) with stochastic methods and quantifying ensemble diversity. Our results highlight the strengths and limitations of each approach, emphasizing the importance of incorporating stochastic methods for capturing RNA's structural flexibility.
+
+%====================================
+% Methods
+%====================================
+\section{Methods} 
+
+\subsection{Overview}
+To compare the performance of the Nussinov and Zuker algorithms for RNA secondary structure prediction, we expanded our computational pipeline to include stochastic traceback and incorporated alternative approaches to analyze structural variability and evaluate the predictions. Below are the revised details of the methods used:
+
+\subsection{Data Collection}
+
+RNA sequences were selected from publicly available RNA databases. These sequences include both synthetic and biologically relevant RNAs with known secondary structures to evaluate the accuracy and variability of the predictions.
+
+\subsection{Algorithms}
+
+\begin{enumerate}
+\item Nussinov Algorithm: The Nussinov algorithm is a dynamic programming-based method that predicts RNA secondary structures by maximizing the number of base pairs. It does not incorporate thermodynamic principles and focuses solely on base-pairing compatibility.
+\item Zuker Algorithm: The Zuker algorithm predicts the minimum free energy (MFE) structure using a dynamic programming approach. It considers both base-pairing and loop energy terms, providing more biologically realistic predictions.
+\item Stochastic Traceback (ViennaRNA): To explore alternative structures beyond the MFE, we employed the stochastic traceback functionality of the ViennaRNA library. This method samples secondary structures from the Boltzmann-weighted ensemble of possible structures, enabling analysis of structural variability and diversity.
+\end{enumerate}
+
+\subsection{Comparison Metrics}
+
+Three primary metrics were used to compare the algorithms:
+\begin{itemize}
+\item \textbf{Overlap Score}: The overlap between the base pairs predicted by the two algorithms, representing the level of agreement in their structural predictions.
+\item \textbf{Minimum Free Energy (MFE)}: The predicted free energy scores of the RNA secondary structures, reflecting thermodynamic stability.
+\item \textbf{Traceback Diversity}: The number of unique secondary structures sampled during stochastic traceback, indicating structural variability and flexibility.
+\end{itemize}
+
+\subsection{Computational Pipeline}
+
+\begin{enumerate}
+\item \textbf{Structure Prediction}:
+\begin{itemize}
+\item Each RNA sequence was processed through the Nussinov and Zuker algorithms to generate predicted secondary structures.
+\item For each sequence, stochastic traceback was performed using the ViennaRNA library to sample a set of alternative structures from the Boltzmann ensemble.
+\item Predicted structures were represented in dot-bracket notation for ease of comparison.
+\end{itemize}
+\item \textbf{Overlap Score Calculation}:
+\begin{itemize}
+\item The overlap score was computed by identifying shared base pairs between the two predictions (Nussinov and Zuker) for each RNA sequence.
+\end{itemize}
+\item \textbf{Energy Score Evaluation}:
+\begin{itemize}
+\item The MFE values were extracted for both the Zuker algorithm and the most common structures sampled during stochastic traceback.
+\end{itemize}
+\item \textbf{Traceback Diversity Analysis}:
+\begin{itemize}
+\item The diversity of sampled structures was quantified by counting the number of unique secondary structures generated for each RNA sequence.
+\end{itemize}
+\end{enumerate}
+
+\subsection{Implementation}
+
+\begin{itemize}
+\item The algorithms were implemented in Python, leveraging libraries such as ViennaRNA for stochastic traceback, Biopython for RNA sequence manipulation, and Pandas for data analysis.
+\item Results from the Nussinov and Zuker algorithms, along with the stochastic traceback outputs, were stored in a DataFrame to facilitate comparison and statistical analysis.
+\end{itemize}
+
+\subsection{Statistical Analysis}
+
+Statistical tests and visualizations were conducted to compare the performance of the algorithms across the following metrics:
+\begin{itemize}
+\item \textbf{Overlap Score}: Distribution of overlap scores was analyzed to assess consistency between Nussinov and Zuker predictions.
+\item \textbf{Energy Score}: MFE values from the Zuker algorithm and stochastic traceback results were compared to evaluate stability.
+\item \textbf{Traceback Diversity}: The distribution of unique structures sampled during stochastic traceback was analyzed to capture structural variability.
+\item \textbf{Sequence Features}: Relationships between sequence length, GC content, and the calculated metrics (overlap score, MFE, and diversity) were evaluated.
+\end{itemize}
+
+\subsection{Visualization}
+
+Plots, such as histograms, scatter plots, and bar charts, were generated to provide insights into the performance and variability of the algorithms:
+\begin{itemize}
+\item \textbf{Histogram of Overlap Scores}: To assess the agreement between Nussinov and Zuker predictions.
+\item \textbf{Scatter Plot of Sequence Length vs. Diversity}: To analyze how sequence length influences structural variability.
+\item \textbf{Distribution of MFE Values}: To visualize the stability of structures predicted by the Zuker algorithm and stochastic traceback.
+\item \textbf{Most Common Structures}: Bar plots of the most frequently sampled structures during stochastic traceback.
+\end{itemize}
+
+\subsection{Software and Tools}
+
+\begin{itemize}
+\item \textbf{Python Libraries}: ViennaRNA for stochastic traceback, Matplotlib and Seaborn for visualization, Pandas for data handling, and Numpy for statistical analysis.
+\item \textbf{ViennaRNA API}: Used for MFE calculation and stochastic traceback of RNA secondary structures.
+\item \textbf{CSV Export}: All results were saved as CSV files for reproducibility and further analysis.
+\end{itemize}
+
+This updated methodology incorporates stochastic traceback and diversity analysis, providing a more comprehensive framework for comparing the Nussinov and Zuker algorithms while evaluating the structural flexibility captured by the Boltzmann ensemble.
+
+%====================================
+% Results (Experiments)
+%=====================================
+\section{Results}
+
+\subsection{Traceback Diversity vs. Zuker MFE}
+To analyze the relationship between structural diversity and thermodynamic stability, we compared the traceback diversity (unique structures sampled during stochastic traceback) with the Zuker minimum free energy (MFE). The results, as shown in Figure~\ref{fig:traceback_mfe}, indicate that traceback diversity is consistently around 1 for all sequences, regardless of the Zuker MFE values, which ranged widely from -500 to 0. This suggests that the stochastic traceback primarily identified a single dominant structure for each sequence, despite varying thermodynamic stabilities.
+
+\subsection{Distribution of Ensemble Diversity}
+Ensemble diversity, measured as the mean base-pair distance within the structural ensemble of each sequence, was analyzed to capture structural variability. Figure~\ref{fig:ensemble_diversity} shows the distribution of ensemble diversity across all sequences. The majority of sequences exhibited low ensemble diversity (mean base-pair distance close to zero), indicating a strong bias towards single dominant structures. A few sequences showed moderate to high diversity, suggesting the presence of flexible regions, such as loops or bulges, that allow alternative configurations.
+
+\subsection{Traceback Diversity vs. Sequence Length}
+To evaluate whether sequence length affects structural variability, we plotted traceback diversity against sequence length (Figure~\ref{fig:traceback_length}). The results demonstrate that traceback diversity remains consistently around 1 across all sequence lengths, ranging from ~50 to ~1400 nucleotides. This indicates that sequence length does not influence the number of unique structures generated during stochastic traceback.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{traceback_mfe.png}
+    \caption{Traceback Diversity vs. Zuker MFE. The traceback diversity is consistently around 1 for all sequences, regardless of the Zuker MFE values, indicating limited structural variability.}
+    \label{fig:traceback_mfe}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{ensemble_diversity.png}
+    \caption{Distribution of Ensemble Diversity Across Sequences. Most sequences exhibit low ensemble diversity, suggesting strong thermodynamic preferences for single dominant structures. A small number of sequences show higher diversity, indicating structural flexibility.}
+    \label{fig:ensemble_diversity}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=\textwidth]{traceback_length.png}
+    \caption{Traceback Diversity vs. Sequence Length. Traceback diversity remains consistently low and shows no correlation with sequence length, suggesting that structural variability is not influenced by sequence complexity.}
+    \label{fig:traceback_length}
+\end{figure}
+
+%====================================
+% Discussions (Conclusion)
+%====================================
+\section{Discussion}
+
+RNA secondary structure plays a crucial role in determining the biological functions of RNA molecules. Accurate computational predictions of these structures enable a deeper understanding of RNA functionality and their design for therapeutic and synthetic purposes. This study compared the performance of two classical RNA secondary structure prediction algorithms, the Nussinov and Zuker algorithms, alongside stochastic traceback to explore structural variability.
+
+\subsection{Key Findings}
+
+\textbf{1. Performance of Deterministic Algorithms:}  
+The Zuker algorithm, which incorporates thermodynamic principles to predict the minimum free energy (MFE) structure, consistently generated biologically realistic predictions with stable energy profiles. In contrast, the Nussinov algorithm, while computationally simpler, relies on maximizing base pair counts without considering energy contributions, leading to discrepancies in structural predictions. This was evident in the overlap scores, which highlighted areas of agreement and divergence between the two methods.
+
+\textbf{2. Structural Variability Captured by Stochastic Traceback:}  
+Incorporating stochastic traceback provided insights into the Boltzmann-weighted ensemble of RNA secondary structures. However, the low traceback diversity observed across the majority of sequences suggests that most RNA molecules adopt a single dominant structure, with minimal sampling of alternative configurations. This is consistent with the thermodynamic bias of RNA folding towards energetically favorable conformations.
+
+\textbf{3. Role of Ensemble Diversity:}  
+Ensemble diversity, as quantified by the mean base-pair distance across sampled structures, revealed low variability in the structural ensembles of most sequences. Exceptions with higher diversity likely correspond to RNA regions with increased flexibility, such as loops or bulges. This emphasizes the importance of analyzing ensemble diversity for understanding RNA folding dynamics beyond deterministic MFE predictions.
+
+\subsection{Implications of Findings}
+
+The results demonstrate the utility of combining deterministic and stochastic approaches for RNA secondary structure prediction. While deterministic methods like Zuker provide high-confidence predictions for stable structures, stochastic traceback captures the inherent flexibility of RNA molecules, offering a more comprehensive view of their structural landscape. The observed limitations in stochastic traceback, such as low diversity, underscore the need for improved sampling methods or enhanced energy models to better represent metastable states and pseudoknots.
+
+\subsection{Limitations and Future Work}
+
+\textbf{1. Sampling Constraints:}  
+The limited diversity observed during stochastic traceback may result from insufficient sampling iterations or the energy model's inherent biases. Future work could address this by increasing the number of stochastic samples or exploring alternative sampling techniques, such as suboptimal structure prediction using \texttt{RNAsubopt}.
+
+\textbf{2. Pseudoknot Prediction:}  
+This study did not explicitly include pseudoknot modeling, which remains a challenge for many RNA secondary structure prediction tools. Incorporating pseudoknot-capable algorithms, such as HotKnots or IPknot, could provide a more accurate representation of RNA structural complexity.
+
+
+
+
+
+
+
+% %===============================
+% % Acknowledgements (Optional)
+% %===============================
+% \section*{Acknowledgements}
+
+
+
+%===============================
+% References
+%===============================
+% Please use natbib (https://ctan.org/pkg/natbib?lang=en) with the provided style file (final.bst).
+% References, figures, tables, and algorithms do not count toward the minimum page requirement.
+\label{mylastpage}
+\newpage
+\fancyfoot{}
+\bibliographystyle{final_ref} 
+\bibliography{final} 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
